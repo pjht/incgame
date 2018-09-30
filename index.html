@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Incremental Game</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="main.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="main.js"></script>
+  </head>
+  <body>
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" id="link_main" onclick="set_tab('main')">Main</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="link_buildings" onclick="set_tab('buildings')">Buildings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="link_population" onclick="set_tab('population')">Population</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="link_research" onclick="set_tab('research')">Research</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="link_options" onclick="set_tab('options')">Options</a>
+      </li>
+    </ul>
+    <div id="tab_main">
+      <button onclick="incResource('wood')">Gather wood</button>
+      <div class="resources_required">
+        <br>
+        <p id="max_resources">Resources:</p>
+        <p id="resources"></p>
+      </div>
+    </div>
+    <div id="tab_buildings">
+      <div id="craft_buttons"></div>
+      <p>Buildings:</p>
+      <p id="buildings"></p>
+    </div>
+    <div id="tab_population">
+      <p id="pop">Population uninitialized!</p>
+      <p id="work_pop">Working population uninitialized!</p>
+      <p id="num_lumberjacks">Number of lumberjacks uninitialized!</p>
+      <button class="hire" onclick="hire('lumberjack')">Hire</button>
+      <button id="fire_lumberjack" onclick="fire('lumberjack')">Fire</button>
+      <p id="num_miners">Number of miners uninitialized!</p>
+      <button class="hire" onclick="hire('miner')">Hire</button>
+      <button id="fire_miner" onclick="fire('miner')">Fire</button>
+      <div class="research_required">
+        <p id="num_scientists">Number of scientists uninitialized!</p>
+        <button class="hire" onclick="hire('scientist')">Hire</button>
+        <button id="fire_scientist" onclick="fire('scientist')">Fire</button>
+      </div>
+    </div>
+    <div id="tab_research">
+      <p id="research_points">Research points uninitialized!</p>
+      <div id="research_buttons"></div>
+      <p>Researches:</p>
+      <div id="researches"></div>
+    </div>
+    <div id="tab_options">
+      <button onclick="reset()">Reset</button>
+    </div>
+  </body>
+</html>
