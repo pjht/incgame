@@ -2,7 +2,7 @@ var maxPop=0;
 var pop=0;
 var working=0;
 var resources={};
-var maxResources=50;
+var maxResources=100;
 var numResources=0;
 var buildings={};
 var unlockedBuildings=[];
@@ -45,10 +45,10 @@ var all_buildings={
   },
   storehouse:{
     ings:{
-      wood:40
+      wood:60
     },
     build_effects: {
-      max_resources:50
+      max_resources:100
     }
   },
   "trading post":{
