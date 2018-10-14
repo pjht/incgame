@@ -1,21 +1,17 @@
-var maxPop=0;
-var pop=0;
-var working=0;
-var resources={};
-var maxResources=100;
-var numResources=0;
-var buildings={};
-var unlockedBuildings=[];
-var has_shelter=false;
-var researches={};
-var unlockedResearch=[];
-var research_points=0;
-var max_research_points=0;
-var workers={
-  lumberjack:0,
-  miner:0,
-  scientist:0
-};
+var maxPop;
+var pop;
+var working;
+var resources;
+var maxResources;
+var numResources;
+var buildings;
+var unlockedBuildings;
+var has_shelter;
+var researches;
+var unlockedResearch;
+var research_points;
+var max_research_points;
+var workers;
 var all_buildings={
   hut:{
     ings:{
@@ -410,16 +406,18 @@ function reset() {
 function init() {
   if (!load()) {
     maxPop=0;
-    maxResources=50;
     pop=0;
     working=0;
     resources={};
+    maxResources=100;
+    numResources=0;
     buildings={};
     unlockedBuildings=[];
     has_shelter=false;
     researches={};
     unlockedResearch=[];
     research_points=0;
+    max_research_points=0;
     workers={
       lumberjack:0,
       miner:0,
