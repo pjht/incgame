@@ -5,9 +5,9 @@ var buildings;
 var unlockedBuildings;
 var researches;
 var unlockedResearch;
-var research_points;
+var researchPoints;
 var workers;
-var all_buildings={
+var allBuildings={
   hut:{
     ings:{
       wood:15
@@ -31,7 +31,7 @@ var all_buildings={
       metal:15
     },
     attributes:{
-      max_research_points:150
+      maxResearchPoints:100
     }
   },
   storehouse:{
@@ -39,7 +39,7 @@ var all_buildings={
       wood:60
     },
     attributes: {
-      max_resources:100
+      maxResources:100
     }
   },
   "trading post":{
@@ -52,28 +52,28 @@ var all_buildings={
 var allWorkers={
   lumberjack:"wood",
   miner:"metal",
-  scientist:"research_points"
+  scientist:"researchPoints"
 };
-var worker_rate=0.1;
-var all_researches={
+var workerRate=0.1;
+var allResearches={
   "Faster workers":{
     maxLevel:6,
     cost:100,
     effects:{
-      worker_rate:0.2
+      workerRate:0.2
     }
   }
 };
 var multiplier=1.17;
-var trading_rates={
+var tradingRates={
   wood:1,
   metal:10
 };
 var startingStorage=100;
 var shelters=[];
 function initializeShelterArray() {
-  for (var name in all_buildings) {
-    var building=all_buildings[name];
+  for (var name in allBuildings) {
+    var building=allBuildings[name];
     var attrbs=building.attributes;
     if (attrbs) {
       var maxpop=attrbs.maxPop;
@@ -84,7 +84,7 @@ function initializeShelterArray() {
   }
 }
 function getBuildingAttribute(name,attrname) {
-  var attr=all_buildings[name].attributes[attrname];
+  var attr=allBuildings[name].attributes[attrname];
   if (attr==undefined) {
     attr=0;
   }
@@ -102,13 +102,13 @@ function tenthRound(number) {
 }
 function maxResources() {
   var numStorehouses=numOfBuilding("storehouse");
-  var storehouseResources=getBuildingAttribute("storehouse","max_resources");
+  var storehouseResources=getBuildingAttribute("storehouse","maxResources");
   var extraStorage=numStorehouses*storehouseResources;
   return startingStorage+extraStorage;
 }
-function max_research_points() {
-  var numLabs=numOfBuilding("labs");
-  var labRpoints=getBuildingAttribute("lab","max_research_points");
+function maxResearchPoints() {
+  var numLabs=numOfBuilding("lab");
+  var labRpoints=getBuildingAttribute("lab","maxResearchPoints");
   return numLabs*labRpoints;
 }
 function maxPop() {
@@ -122,36 +122,36 @@ function maxPop() {
   return maxpop;
 }
 function updateShown() {
-  var has_resources=Object.keys(resources).length>0;
-  var has_lab=Object.keys(buildings).includes("lab");
-  var has_tpost=Object.keys(buildings).includes("trading post");
-  var has_shelter=false
+  var hasResources=Object.keys(resources).length>0;
+  var hasLab=Object.keys(buildings).includes("lab");
+  var hasTpost=Object.keys(buildings).includes("trading post");
+  var hasShelter=false
   for (var i in shelters) {
     var shelter=shelters[i];
     if (Object.keys(buildings).includes(shelter)) {
-      has_shelter=true;
+      hasShelter=true;
       break;
     }
   }
-  $(".shelter_required").toggle(has_shelter);
-  $("#link_population").toggle(has_shelter);
-  $(".resources_required").toggle(has_resources);
-  $("#link_buildings").toggle(has_resources);
-  $("#link_research").toggle(has_lab);
-  $(".research_required").toggle(has_lab);
-  $("#link_trading").toggle(has_tpost);
+  $(".shelterRequired").toggle(hasShelter);
+  $("#linkPopulation").toggle(hasShelter);
+  $(".resourcesRequired").toggle(hasResources);
+  $("#linkBuildings").toggle(hasResources);
+  $("#linkResearch").toggle(hasLab);
+  $(".researchRequired").toggle(hasLab);
+  $("#linkTrading").toggle(hasTpost);
 }
 function incResource(name,amount=1) {
-  if (name=="research_points") {
-    if (research_points>max_research_points()) {
+  if (name=="researchPoints") {
+    if (researchPoints>maxResearchPoints()) {
       return;
     }
-    research_points+=amount;
-    if (research_points>max_research_points()) {
-      research_points-=amount;
+    researchPoints+=amount;
+    if (researchPoints>maxResearchPoints()) {
+      researchPoints-=amount;
       return;
     }
-    research_points=tenthRound(research_points);
+    researchPoints=tenthRound(researchPoints);
     updateResearchPointInfo();
     updateResearchButtons();
   } else {
@@ -203,15 +203,15 @@ function incBuilding(name) {
 }
 function buildingCost(name) {
   var newIngs={};
-  var ings=all_buildings[name].ings;
-  var building_amount=buildings[name];
-  if (building_amount==undefined) {
-    building_amount=0;
+  var ings=allBuildings[name].ings;
+  var buildingAmount=buildings[name];
+  if (buildingAmount==undefined) {
+    buildingAmount=0;
   }
   for (var ing in ings) {
-    var ing_amount=ings[ing];
-    ing_amount=Math.floor(ing_amount*(multiplier**building_amount));
-    newIngs[ing]=ing_amount;
+    var ingAmount=ings[ing];
+    ingAmount=Math.floor(ingAmount*(multiplier**buildingAmount));
+    newIngs[ing]=ingAmount;
   }
   return newIngs;
 }
@@ -243,7 +243,7 @@ function updateResourceInfo() {
     var capName=capitalizeFirst(name);
     $("#resources").append("<p>"+capName+": "+resources[name]+"</p>");
   }
-    $("#max_resources").text("Resources: ("+numResources+"/"+maxResources()+")");
+    $("#maxResources").text("Resources: ("+numResources+"/"+maxResources()+")");
 }
 function updateBuildingInfo() {
   $("#buildings").html("");
@@ -253,8 +253,8 @@ function updateBuildingInfo() {
   }
 }
 function updateCraftButtons() {
-  $("#craft_buttons").html("");
-  for (var name in all_buildings) {
+  $("#craftButtons").html("");
+  for (var name in allBuildings) {
     if (name=="trading post" && buildings["trading post"]>0) {
       continue;
     }
@@ -294,9 +294,9 @@ function updateCraftButtons() {
         i++;
       }
       if (disabled) {
-        $("#craft_buttons").append("<button disabled onclick=\"craft('"+name+"')\">Craft a "+btext+"</button><br>");
+        $("#craftButtons").append("<button disabled onclick=\"craft('"+name+"')\">Craft a "+btext+"</button><br>");
       } else {
-        $("#craft_buttons").append("<button onclick=\"craft('"+name+"')\">Craft a "+btext+"</button><br>");
+        $("#craftButtons").append("<button onclick=\"craft('"+name+"')\">Craft a "+btext+"</button><br>");
       }
     }
   }
@@ -318,52 +318,53 @@ function updateWorkerInfo() {
   var working=0;
   for (var worker in allWorkers) {
     var workerAmount=workers[worker];
-    if (workerAmount) {
+    if (!workerAmount) {
       workerAmount=0;
     }
     working+=workerAmount;
-    $("#fire_"+worker).attr("disabled",workerAmount==0);
-    $("#num_"+worker+"s").text(capitalizeFirst(worker)+"s: "+workerAmount);
+    worker=capitalizeFirst(worker);
+    $("#fire"+worker).attr("disabled",workerAmount==0);
+    $("#num"+worker+"s").text(worker+"s: "+workerAmount);
   }
-  $("#work_pop").text("Working: "+working+"/"+pop);
+  $("#workPop").text("Working: "+working+"/"+pop);
   $(".hire").attr("disabled",working==pop);
 }
 function updateTradingButtons() {
-  $("#tab_trading").html("");
-  for (var name in trading_rates) {
-    var rate=trading_rates[name];
-    $("#tab_trading").append("<p>"+capitalizeFirst(name)+": "+rate+" gold"+"</p>");
-    $("#tab_trading").append("<button id=sell1 onclick=\"sell('"+name+"')\">Sell 1</button>&nbsp");
-    $("#tab_trading").append("<button id=buy1 onclick=\"buy('"+name+"')\">Buy 1</button><br>");
-    $("#tab_trading").append("<button id=sell10 onclick=\"sell('"+name+"',10)\">Sell 10</button>&nbsp");
-    $("#tab_trading").append("<button id=buy10 onclick=\"buy('"+name+"',10)\">Buy 10</button>");
-    $("#tab_trading #sell1").prop("disabled",!canSell(name)).removeAttr("id");
-    $("#tab_trading #buy1").prop("disabled",resources["gold"]<trading_rates[name]).removeAttr("id");
-    $("#tab_trading #sell10").prop("disabled",!canSell(name,10)).removeAttr("id");
-    $("#tab_trading #buy10").prop("disabled",resources["gold"]<trading_rates[name]*10).removeAttr("id");
+  $("#tabTrading").html("");
+  for (var name in tradingRates) {
+    var rate=tradingRates[name];
+    $("#tabTrading").append("<p>"+capitalizeFirst(name)+": "+rate+" gold"+"</p>");
+    $("#tabTrading").append("<button id=sell1 onclick=\"sell('"+name+"')\">Sell 1</button>&nbsp");
+    $("#tabTrading").append("<button id=buy1 onclick=\"buy('"+name+"')\">Buy 1</button><br>");
+    $("#tabTrading").append("<button id=sell10 onclick=\"sell('"+name+"',10)\">Sell 10</button>&nbsp");
+    $("#tabTrading").append("<button id=buy10 onclick=\"buy('"+name+"',10)\">Buy 10</button>");
+    $("#tabTrading #sell1").prop("disabled",!canSell(name)).removeAttr("id");
+    $("#tabTrading #buy1").prop("disabled",resources["gold"]<tradingRates[name]).removeAttr("id");
+    $("#tabTrading #sell10").prop("disabled",!canSell(name,10)).removeAttr("id");
+    $("#tabTrading #buy10").prop("disabled",resources["gold"]<tradingRates[name]*10).removeAttr("id");
   }
 }
 function updateResearchPointInfo() {
-  $("#research_points").text("Research points: "+research_points+"/"+max_research_points());
+  $("#researchPoints").text("Research points: "+researchPoints+"/"+maxResearchPoints());
 }
 function updateResearchButtons() {
-  $("#research_buttons").html("");
-  for (var name in all_researches) {
-    var research=all_researches[name];
+  $("#researchButtons").html("");
+  for (var name in allResearches) {
+    var research=allResearches[name];
     var cost=research.cost;
     var maxLevel=research.maxLevel;
     var show=true;
     var disabled=false;
     if (!unlockedResearch.includes(name)) {
-        if (research_points<cost/2) {
+        if (researchPoints<cost/2) {
           show=false;
-        } else if (research_points<cost) {
+        } else if (researchPoints<cost) {
           disabled=true;
         }
     } else {
       if (researches[name]==maxLevel) {
         show=false
-      } else if (research_points<cost) {
+      } else if (researchPoints<cost) {
         disabled=true;
       }
     }
@@ -372,9 +373,9 @@ function updateResearchButtons() {
         unlockedResearch.push(name);
       }
       if (disabled) {
-        $("#research_buttons").append("<button disabled onclick=\"research('"+name+"')\">"+name+" ("+cost+" points)</button><br>");
+        $("#researchButtons").append("<button disabled onclick=\"research('"+name+"')\">"+name+" ("+cost+" points)</button><br>");
       } else {
-        $("#research_buttons").append("<button onclick=\"research('"+name+"')\">"+name+" ("+cost+" points)</button><br>");
+        $("#researchButtons").append("<button onclick=\"research('"+name+"')\">"+name+" ("+cost+" points)</button><br>");
       }
     }
   }
@@ -387,18 +388,18 @@ function updateResearchInfo() {
 }
 function applyResearches() {
   for (var research in researches) {
-    var effects=all_researches[research].effects;
+    var effects=allResearches[research].effects;
     var level=researches[research];
     for (var effect in effects) {
-      if (effect=="worker_rate") {
-        worker_rate=0.5;
-        worker_rate+=effects[effect]*level;
+      if (effect=="workerRate") {
+        workerRate=0.5;
+        workerRate+=effects[effect]*level;
       }
     }
   }
 }
 function research(name) {
-  research_points-=all_researches[name].cost;
+  researchPoints-=allResearches[name].cost;
   if (researches[name]) {
     researches[name]+=1;
   } else {
@@ -426,11 +427,11 @@ function fire(type) {
 }
 function autoInc() {
   for (var worker in allWorkers) {
-    worker_amount=workers[worker];
-    var amount=worker_rate*worker_amount;
+    workerAmount=workers[worker];
+    var amount=workerRate*workerAmount;
     if (amount>0) {
       if (worker=="scientist") {
-        var usedMetal=Math.ceil(worker_amount*0.4);
+        var usedMetal=Math.ceil(workerAmount*0.4);
         if (resources["metal"]>=usedMetal) {
           incResource(allWorkers[worker],amount);
           decResource("metal",usedMetal);
@@ -451,7 +452,7 @@ function save() {
     unlockedBuildings:unlockedBuildings,
     researches:researches,
     unlockedResearch:unlockedResearch,
-    research_points:research_points,
+    researchPoints:researchPoints,
   }
   localStorage.setItem("game",JSON.stringify(gamestate));
 }
@@ -468,7 +469,7 @@ function load() {
   unlockedBuildings=gamestate.unlockedBuildings;
   researches=gamestate.researches;
   unlockedResearch=gamestate.unlockedResearch;
-  research_points=gamestate.research_points;
+  researchPoints=gamestate.researchPoints;
   return true;
 }
 function reset() {
@@ -487,14 +488,14 @@ function init() {
     unlockedBuildings=[];
     researches={};
     unlockedResearch=[];
-    research_points=0;
+    researchPoints=0;
     workers={
       lumberjack:0,
       miner:0,
       scientist:0
     };
   }
-  set_tab("main");
+  setTab("main");
   updateShown();
   updateResourceInfo();
   updateBuildingInfo();
@@ -507,26 +508,27 @@ function init() {
   applyResearches();
   updateTradingButtons();
 }
-function set_tab(tab) {
-  if ($("#link_"+tab).is(":visible")) {
-    $("[id^='tab_']").hide();
-    $("[id^='link_']").removeClass("active");
-    $("#tab_"+tab).show();
-    $("#link_"+tab).addClass("active");
+function setTab(tab) {
+  tab=capitalizeFirst(tab);
+  if ($("#link"+tab).is(":visible")) {
+    $("[id^='tab']").hide();
+    $("[id^='link']").removeClass("active");
+    $("#tab"+tab).show();
+    $("#link"+tab).addClass("active");
   }
 }
 function canSell(name,amount=1) {
-  var goldGotten=trading_rates[name]*amount;
+  var goldGotten=tradingRates[name]*amount;
   var spacesNeeded=goldGotten-amount;
   return maxResources()-numResources>=spacesNeeded;
 }
 function buy(name,amount=1) {
-  decResource("gold",trading_rates[name]*amount);
+  decResource("gold",tradingRates[name]*amount);
   incResource(name,amount);
 }
 function sell(name,amount=1) {
   decResource(name,amount);
-  incResource("gold",trading_rates[name]*amount);
+  incResource("gold",tradingRates[name]*amount);
 }
 $(document).ready(function() {
   initializeShelterArray();
