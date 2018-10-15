@@ -54,7 +54,7 @@ var all_buildings={
     }
   }
 };
-var worker_resource={
+var allWorkers={
   lumberjack:"wood",
   miner:"metal",
   scientist:"research_points"
@@ -276,9 +276,13 @@ function updatePopulationInfo() {
 function updateWorkerInfo() {
   $("#work_pop").text("Working: "+working+"/"+pop);
   $(".hire").attr("disabled",working==pop);
-  for (var worker in workers) {
-    $("#fire_"+worker).attr("disabled",workers[worker]==0);
-    $("#num_"+worker+"s").text(capitalizeFirst(worker)+"s: "+workers[worker]);
+  for (var worker in Object.keys(allWorkers)) {
+    var workerAmount=workers[worker];
+    if (workerAmount) {
+      workerAmount=0;
+    }
+    $("#fire_"+worker).attr("disabled",workerAmount==0);
+    $("#num_"+worker+"s").text(capitalizeFirst(worker)+"s: "+workerAmount);
   }
 }
 function research(name) {
@@ -329,28 +333,36 @@ function updateResearchButtons() {
   }
 }
 function hire(type) {
-  workers[type]+=1;
+  if (workers[type]) {
+      workers[type]+=1;
+  } else {
+    workers[type]=1;
+  }
   working+=1;
   updateWorkerInfo();
 }
 function fire(type) {
-  workers[type]-=1;
+  if (workers[type]) {
+      workers[type]-=1;
+  } else {
+    throw new Error("Cannot fire a never hired employee");
+  }
   working-=1;
   updateWorkerInfo();
 }
 function autoInc() {
-  for (var worker in workers) {
+  for (var worker in Object.keys(allWorkers)) {
     worker_amount=workers[worker];
     var amount=worker_rate*worker_amount;
     if (amount>0) {
       if (worker=="scientist") {
         var usedMetal=Math.ceil(worker_amount*0.4);
         if (resources["metal"]>=usedMetal) {
-          incResource(worker_resource[worker],amount);
+          incResource(allWorkers[worker],amount);
           decResource("metal",usedMetal);
         }
       } else {
-        incResource(worker_resource[worker],amount);
+        incResource(allWorkers[worker],amount);
       }
     }
   }
