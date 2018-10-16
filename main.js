@@ -61,7 +61,8 @@ var allBuildings={
 var allWorkers={
   lumberjack:"wood",
   miner:"metal",
-  scientist:"researchPoints"
+  scientist:"researchPoints",
+  farmer:"food"
 };
 var workerRate=0.1;
 var allResearches={
@@ -163,7 +164,8 @@ function updateShown() {
   var hasResources=Object.keys(resources).length>0;
   var hasLab=Object.keys(buildings).includes("lab");
   var hasTpost=Object.keys(buildings).includes("trading post");
-  var hasShelter=false
+  var hasShelter=false;
+  var hasFarm=numOfBuilding("farm")>0;
   for (var i in shelters) {
     var shelter=shelters[i];
     if (Object.keys(buildings).includes(shelter)) {
@@ -178,6 +180,7 @@ function updateShown() {
   $("#linkResearch").toggle(hasLab);
   $(".researchRequired").toggle(hasLab);
   $("#linkTrading").toggle(hasTpost);
+  $(".farmRequired").toggle(hasFarm);
 }
 function incResource(name,amount=1) {
   if (name=="researchPoints") {
@@ -354,18 +357,23 @@ function updatePopulationInfo() {
 }
 function updateWorkerInfo() {
   var working=0;
+  var disableFarmer=false;
   for (var worker in allWorkers) {
     var workerAmount=workers[worker];
     if (!workerAmount) {
       workerAmount=0;
     }
     working+=workerAmount;
+    if (worker=="farmer") {
+      disableFarmer=workerAmount==maxFarmers();
+    }
     worker=capitalizeFirst(worker);
     $("#fire"+worker).attr("disabled",workerAmount==0);
     $("#num"+worker+"s").text(worker+"s: "+workerAmount);
   }
   $("#workPop").text("Working: "+working+"/"+pop);
   $(".hire").attr("disabled",working==pop);
+  $("#hireFarmer").attr("disabled",disableFarmer);
 }
 function updateTradingButtons() {
   $("#tabTrading").html("");
@@ -467,16 +475,20 @@ function autoInc() {
   for (var worker in allWorkers) {
     workerAmount=workers[worker];
     var amount=workerRate*workerAmount;
-    if (amount>0) {
+    var amountFood=resources.food
+    if (amountFood>amount*0.75 && amount>0) {
       if (worker=="scientist") {
         var usedMetal=Math.ceil(workerAmount*0.4);
         if (resources["metal"]>=usedMetal) {
           incResource(allWorkers[worker],amount);
           decResource("metal",usedMetal);
         }
+      } else if (worker=="farmer") {
+        incResource(allWorkers[worker],amount*farmYield());
       } else {
         incResource(allWorkers[worker],amount);
       }
+      decResource("food",amount*0.75);
     }
   }
 }
