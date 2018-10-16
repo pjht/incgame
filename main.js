@@ -47,6 +47,15 @@ var allBuildings={
       wood:100,
       metal:50
     }
+  },
+  farm:{
+    ings:{
+      wood:30,
+      metal:15
+    },
+    attributes:{
+      maxFarmers:2
+    }
   }
 };
 var allWorkers={
@@ -62,6 +71,13 @@ var allResearches={
     effects:{
       workerRate:0.2
     }
+  },
+  "Better Yield": {
+    maxLevel:5,
+    cost:120,
+    effects:{
+      yield:3
+    }
   }
 };
 var multiplier=1.17;
@@ -69,8 +85,9 @@ var tradingRates={
   wood:1,
   metal:10
 };
-var startingStorage=100;
 var shelters=[];
+var startingStorage=100;
+var startingYield=3;
 function initializeShelterArray() {
   for (var name in allBuildings) {
     var building=allBuildings[name];
@@ -83,7 +100,7 @@ function initializeShelterArray() {
     }
   }
 }
-function getBuildingAttribute(name,attrname) {
+function buildingAttribute(name,attrname) {
   var attr=allBuildings[name].attributes[attrname];
   if (attr==undefined) {
     attr=0;
@@ -97,18 +114,32 @@ function numOfBuilding(name) {
   }
   return count;
 }
+function researchLevel(name) {
+  var level=researches[name]
+  if (level==undefined) {
+    level=0;
+  }
+  return level;
+}
+function researchEffect(name,attrname) {
+  var effect=allResearches[name].effects[attrname];
+  if (effect==undefined) {
+    effect=0;
+  }
+  return effect;
+}
 function tenthRound(number) {
   return Math.round(number*10)/10;
 }
 function maxResources() {
   var numStorehouses=numOfBuilding("storehouse");
-  var storehouseResources=getBuildingAttribute("storehouse","maxResources");
+  var storehouseResources=buildingAttribute("storehouse","maxResources");
   var extraStorage=numStorehouses*storehouseResources;
   return startingStorage+extraStorage;
 }
 function maxResearchPoints() {
   var numLabs=numOfBuilding("lab");
-  var labRpoints=getBuildingAttribute("lab","maxResearchPoints");
+  var labRpoints=buildingAttribute("lab","maxResearchPoints");
   return numLabs*labRpoints;
 }
 function maxPop() {
@@ -116,10 +147,17 @@ function maxPop() {
   for (var i in shelters) {
     var shelter=shelters[i];
     if (numOfBuilding(shelter)>0) {
-      maxpop+=numOfBuilding(shelter)*getBuildingAttribute(shelter,"maxPop");
+      maxpop+=numOfBuilding(shelter)*buildingAttribute(shelter,"maxPop");
     }
   }
   return maxpop;
+}
+function maxFarmers() {
+  return numOfBuilding("farm")*buildingAttribute("farm","maxFarmers");
+}
+function farmYield() {
+  var extraYield=researchLevel("Better Yield")*researchEffect("Better Yield","yield");
+  return extraYield+startingYield;
 }
 function updateShown() {
   var hasResources=Object.keys(resources).length>0;
