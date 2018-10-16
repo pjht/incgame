@@ -84,6 +84,7 @@ var allResearches={
 var multiplier=1.17;
 var tradingRates={
   wood:1,
+  food:5,
   metal:10
 };
 var shelters=[];
