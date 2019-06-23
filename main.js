@@ -1,3 +1,4 @@
+
 class Gamestate {
   constructor() {
     this.pop=0,
